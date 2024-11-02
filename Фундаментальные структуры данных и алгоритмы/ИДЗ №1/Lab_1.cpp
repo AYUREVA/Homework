@@ -9,8 +9,8 @@
 //7. Печать
 //8. (доп.операция работы с двумя списками - разность)
 //9. (доп.операция - вариант выдается при сдаче задания)
-
 #include <iostream>
+#include <cmath>
 using namespace std;
 
 class List
@@ -39,6 +39,9 @@ public:
 
     // Разность двух списков
     [[nodiscard]] List difference(const List& other) const;
+
+    // Вычисление числа из списка
+    [[nodiscard]] int calculateNumber() const;
 
 private:
     struct Node
@@ -137,7 +140,6 @@ void List::removeAll(int value)
     } while (current != head);
 }
 
-
 void List::removeBeforeValue(int value)
 {
     if (!head || head->pNext == head) return;
@@ -219,6 +221,42 @@ List List::difference(const List& other) const
     return result;
 }
 
+int List::calculateNumber() const
+{
+    if (!head) return 0;
+
+    Node* current = head;
+    int number = 0;
+    do
+    {
+        number = number * 10 + current->data;
+        current = current->pNext;
+    } while (current != head);
+
+    return number;
+}
+
+List calculateDifferenceFromLists(const List& list1, const List& list2)
+{
+    int num1 = list1.calculateNumber();
+    int num2 = list2.calculateNumber();
+    int resultValue = abs(num1 - num2);
+
+    List resultList;
+
+    // Шаг 1: Собираем цифры результата в строку
+    string resultStr = to_string(resultValue);
+
+    // Шаг 2: Добавляем цифры из строки в список в правильном порядке
+    for (char ch : resultStr)
+    {
+        resultList.push_back(ch - '0'); // Преобразуем каждый символ в цифру и добавляем в список
+    }
+
+    return resultList;
+}
+
+
 int main()
 {
     system("chcp 65001");
@@ -239,6 +277,7 @@ int main()
         cout << "8. Удалить элемент перед каждым вхождением заданного в Списке 1\n";
         cout << "9. Очистить Список 1\n";
         cout << "10. Очистить Список 2\n";
+        cout << "11. Вычислить разность чисел, представленных двумя списками\n";
         cout << "0. Выход\n";
         cout << "Выберите действие: ";
         cin >> choice;
@@ -311,6 +350,19 @@ int main()
             case 10:
                 list2.clear();
                 cout << "Список 2 очищен.\n";
+                break;
+
+            case 11:
+                if (list1.calculateNumber() == 0 || list2.calculateNumber() == 0)
+                {
+                    cout << "Один из списков пуст. Невозможно вычислить разность.\n";
+                }
+                else
+                {
+                    List result = calculateDifferenceFromLists(list1, list2);
+                    cout << "Разность чисел, представленных списками: ";
+                    result.print();
+                }
                 break;
 
             case 0:
